@@ -1,4 +1,5 @@
-# covid-curve
+# Covid Curve
+A Python script to visualise and predict covid cases in Hungary.
 ![Covid curve image](https://i.imgur.com/KbkEq3u.png)
 
-Original is https://github.com/Calmarius
+Original is from [Calmarius](https://github.com/Calmarius)
