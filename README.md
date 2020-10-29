@@ -1,4 +1,4 @@
-# Covid Curve
+# covid-curve
 Script to visualise and predict covid cases in Hungary.
 ![Covid curve image](https://i.imgur.com/FE3VQzq.png)
 
