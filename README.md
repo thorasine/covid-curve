@@ -1,5 +1,5 @@
 # covid-curve
 Script to visualise the current covid-19 trend in Hungary.
-![Covid curve image](https://i.imgur.com/BlpObj8.png)
+![Covid curve image](https://i.imgur.com/My8s6MN.png)
 
 The original is written by [Calmarius](https://github.com/Calmarius).
