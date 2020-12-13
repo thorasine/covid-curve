@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Quickly written curve fitting script for covid data.
-"""
-
 import math
-# from datetime import datetime, timedelta
 import datetime
 from scipy.optimize import curve_fit
 import numpy as np
@@ -318,8 +313,8 @@ def scrape(days_needed):
     for page in range(max_pages_to_scan):
         if len(data) > days_needed:
             return data
-        URL = 'https://koronavirus.gov.hu/hirek?page=' + str(page)
-        page = requests.get(URL)
+        url = 'https://koronavirus.gov.hu/hirek?page=' + str(page)
+        page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
         articles = soup.find_all(class_='article-teaser')
         for article in articles:
@@ -350,6 +345,7 @@ def update_data():
     data = data[:days_needed]
     data.reverse()
     print(data)
+
     covid_string = ""
     deaths_string = ""
     total_cases = int(last_line.split()[1])
@@ -363,18 +359,18 @@ def update_data():
     deaths_string = deaths_string.rstrip('\n')
     print(covid_string)
     print(deaths_string)
-    with open("covid_data.txt", "a") as myfile:
-        myfile.write('\n' + covid_string)
-    with open("covid_deaths.txt", "a") as myfile:
-        myfile.write('\n' + deaths_string)
+    with open("covid_data.txt", "a") as f:
+        f.write('\n' + covid_string)
+    with open("covid_deaths.txt", "a") as f:
+        f.write('\n' + deaths_string)
 
 
 def upload_images():
     with open('imgurcreds.txt') as f:
-        CLIENT_ID = f.readline().rstrip('\n')
+        client_id = f.readline().rstrip('\n')
     plot_path = "plot.png"
     plot_deaths_path = "plot-deaths.png"
-    im = pyimgur.Imgur(CLIENT_ID)
+    im = pyimgur.Imgur(client_id)
     plot = im.upload_image(plot_path, title="Covid-19 graph")
     plot_deaths = im.upload_image(plot_deaths_path, title="Covid-19 deaths")
     print(plot.link)
