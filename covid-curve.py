@@ -5,19 +5,17 @@ Quickly written curve fitting script for covid data.
 """
 
 import math
-import sys
+#from datetime import datetime, timedelta
 import datetime
 from scipy.optimize import curve_fit
 import numpy as np
 import matplotlib
+import requests
+from bs4 import BeautifulSoup
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 
 matplotlib.use('Agg')
-if 1 < 2:
-    import matplotlib.dates as mdates
-    import matplotlib.pyplot as plt
-
-
-TODAY = datetime.datetime.now().strftime('%Y-%m-%d')
 
 
 def parse_covid_data(filename):
@@ -53,9 +51,11 @@ def parse_covid_data(filename):
 
 def get_logistic_model(y_base):
     "Generates logistic model function for the given Y base"
+
     def logistic_model(day, x_scale, peak, max_cases):
         "Logistic model formula"
-        return max_cases/(1+np.exp(-(day-peak)/x_scale)) + y_base
+        return max_cases / (1 + np.exp(-(day - peak) / x_scale)) + y_base
+
     return logistic_model
 
 
@@ -88,10 +88,10 @@ def fit_logistic_model(x_data, y_data, base_date):
             'peak': popt[1],
             'peak_date': peak_date,
             'peak_date_error': peak_date_error,
-            'peak_growth': model(popt[1]+1, popt[0], popt[1], popt[2])
-            - model(popt[1], popt[0], popt[1], popt[2]),
+            'peak_growth': model(popt[1] + 1, popt[0], popt[1], popt[2])
+                           - model(popt[1], popt[0], popt[1], popt[2]),
             'tomorrow_growth':
-                model(x_data[-1]+1, popt[0], popt[1], popt[2]) - y_data[-1],
+                model(x_data[-1] + 1, popt[0], popt[1], popt[2]) - y_data[-1],
             'max_inf': max_inf,
             'max_inf_error': max_inf_error,
             'x_scale': popt[0],
@@ -110,7 +110,8 @@ def get_exponential_model(y_base):
     def exponential_model(day, ln_daily_growth, x_shift):
         "Exponential model formula"
 
-        return np.exp(ln_daily_growth*(day-x_shift)) + y_base
+        return np.exp(ln_daily_growth * (day - x_shift)) + y_base
+
     return exponential_model
 
 
@@ -126,12 +127,12 @@ def fit_exponential_model(x_data, y_data):
     return {
         'ln_daily_growth': params[0],
         'ln_daily_growth_error': errors[0],
-        'daily_growth': np.exp(params[0] + errors[0]**2 / 2),
-        'tomorrow_growth': model(x_data[-1]+1, popt[0], popt[1]) - y_data[-1],
+        'daily_growth': np.exp(params[0] + errors[0] ** 2 / 2),
+        'tomorrow_growth': model(x_data[-1] + 1, popt[0], popt[1]) - y_data[-1],
         'raw_daily_growth': np.exp(params[0]),
         'daily_growth_error': np.sqrt(
-            (np.exp(errors[0]**2)-1) *
-            np.exp(2*params[0]+errors[0]**2)
+            (np.exp(errors[0] ** 2) - 1) *
+            np.exp(2 * params[0] + errors[0] ** 2)
         ),
         'x_shift': params[1],
         'x_shift_error': errors[1],
@@ -146,10 +147,10 @@ def create_curve_data(x_data, y_data, base_date, log_result, exp_result):
     on the calculated results.
     """
     if log_result is None:
-        days_to_simulate = 2*(x_data[-1] - x_data[0] + 1)
+        days_to_simulate = 2 * (x_data[-1] - x_data[0] + 1)
     else:
         days_to_simulate = max(
-            2*(log_result['peak_date'] - base_date).days,
+            2 * (log_result['peak_date'] - base_date).days,
             x_data[-1] - x_data[0] + 1
         )
 
@@ -157,7 +158,7 @@ def create_curve_data(x_data, y_data, base_date, log_result, exp_result):
     out_date = [base_date + datetime.timedelta(days=x)
                 for x in range(x_data[0], x_data[0] + days_to_simulate)]
 
-    out_y = y_data + [float('nan')]*(days_to_simulate - len(y_data))
+    out_y = y_data + [float('nan')] * (days_to_simulate - len(y_data))
 
     if log_result is not None:
         out_log = [get_logistic_model(y_data[0])(
@@ -209,7 +210,7 @@ def save_plot(curve_data, covid_data, log_result, texts):
     plt.ylabel(texts['y_axis_name'])
     plt.xlabel('Dátum')
     if log_result is None:
-        max_y = 2*max(covid_data['y_data'])
+        max_y = 2 * max(covid_data['y_data'])
     else:
         max_y = max(curve_data['logistic'] + covid_data['y_data'])
     plt.tight_layout(rect=[0.05, 0.1, 1, 0.9])
@@ -223,40 +224,12 @@ def save_plot(curve_data, covid_data, log_result, texts):
     plt.legend()
     plt.grid()
     plt.title("{} {}".format(texts['plot_title'], covid_data['last_date_str']))
-    file_name = 'plot-'+covid_data['last_date_str'] + \
-        texts['plot_file_suffix']+'.png'
+    file_name = 'plot' + texts['plot_file_suffix'] + '.png'
     plt.savefig(file_name)
     print("Plot saved to {}".format(file_name))
 
 
-def main():
-    "Entry point"
-
-    death_mode = True
-
-    if len(sys.argv) > 1:
-        death_mode = sys.argv[1] == '--deaths'
-
-    if death_mode:
-        print("Death mode")
-        texts = {
-            'file_name': 'covid_deaths.txt',
-            'cases_axis_name': 'Összes halál',
-            'y_axis_name': 'Összes halott',
-            'element_marker': 'k+',
-            'plot_file_suffix': '-deaths',
-            'plot_title': 'COVID-19 görbeillesztés - összes halott',
-        }
-    else:
-        texts = {
-            'file_name': 'covid_data.txt',
-            'cases_axis_name': 'Jelentett esetek',
-            'y_axis_name': 'Összes eset',
-            'element_marker': 'ro',
-            'plot_file_suffix': '',
-            'plot_title': 'COVID-19 görbeillesztés - összes eset',
-        }
-
+def create_plots(texts):
     # x_data, y_data, base_date, last_date
     covid_data = parse_covid_data(texts['file_name'])
 
@@ -288,9 +261,9 @@ def main():
         "Napi növekedés az exponenciális modell alapján:"
         " {:.2f}% ± {:.2}%."
         " (Duplázódás: {:.2f} naponta, f(x+1) - y(x) ≈ {:.2f})").format(
-        exp_result['daily_growth']*100-100, exp_result['daily_growth_error'] *
+        exp_result['daily_growth'] * 100 - 100, exp_result['daily_growth_error'] *
         100, math.log(
-            2)/math.log(exp_result['daily_growth']),
+            2) / math.log(exp_result['daily_growth']),
         exp_result['tomorrow_growth']
     )
     print(texts['daily_growth_str'])
@@ -304,10 +277,117 @@ def main():
         log_result,
         exp_result
     )
-
-    print_curves(curve_data)
-
+    #print_curves(curve_data)
     save_plot(curve_data, covid_data, log_result, texts)
+
+
+def month_translator(month):
+    switch = {
+        "január": "01",
+        "február": "02",
+        "március": "03",
+        "április": "04",
+        "május": "05",
+        "június": "06",
+        "július": "07",
+        "augusztus": "08",
+        "szeptember": "09",
+        "október": "10",
+        "november": "11",
+        "december": "12"
+    }
+    return switch.get(month, "Invalid day of month")
+
+
+def read_covid_data():
+    with open('covid_data.txt', 'r') as f:
+        lines = f.read().splitlines()
+        last_line = lines[-1]
+        f.close()
+    with open('covid_deaths.txt', 'r') as f:
+        lines = f.read().splitlines()
+        last_deaths_line = lines[-1]
+        f.close()
+    return last_line, last_deaths_line
+
+
+def scrape(days_needed):
+    max_pages_to_scan = 50
+    data = []
+    for page in range(max_pages_to_scan):
+        if len(data) > days_needed:
+            return data
+        URL = 'https://koronavirus.gov.hu/hirek?page=' + str(page)
+        page = requests.get(URL)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        articles = soup.find_all(class_='article-teaser')
+        for article in articles:
+            splitted = article.find('h3').text.strip().split()
+            if len(splitted) > 1 and splitted[1] == "fővel" and splitted[2] == "emelkedett":
+                infected = splitted[0]
+                for i in range(3, len(splitted)):  # krónikus or idős, sometimes both, sometimes neither..
+                    if splitted[i] == "elhunyt":
+                        death = splitted[i + 1]
+                        break
+                date = article.find('i').text.strip()[:-9].replace(".", "")
+                date_s = date.split()
+                date = date_s[0] + "-" + month_translator(date_s[1]) + "-" + date_s[2]
+                triplet = (date, infected, death)
+                data.append(triplet)
+    return data
+
+
+def update_data():
+    last_line, last_deaths_line = read_covid_data()
+    last_date = datetime.datetime.strptime(last_line[:10], '%Y-%m-%d')
+    today = datetime.datetime.today()
+    days_needed = (today - last_date).days
+    if days_needed < 1:
+        print("Already scrapped today's data.")
+        return
+    data = scrape(days_needed)
+    data = data[:days_needed]
+    data.reverse()
+    print(data)
+    covid_string = ""
+    deaths_string = ""
+    total_cases = int(last_line.split()[1])
+    total_deaths = int(last_deaths_line.split()[1])
+    for i in range(len(data)):
+        total_cases += int(data[i][1])
+        total_deaths += int(data[i][2])
+        covid_string += data[i][0] + " " + str(total_cases) + " +" + str(data[i][1]) + "\n"
+        deaths_string += data[i][0] + " " + str(total_deaths) + " +" + str(data[i][2]) + "\n"
+    covid_string = covid_string.rstrip('\n')
+    deaths_string = deaths_string.rstrip('\n')
+    print(covid_string)
+    print(deaths_string)
+    with open("covid_data.txt", "a") as myfile:
+        myfile.write('\n' + covid_string)
+    with open("covid_deaths.txt", "a") as myfile:
+        myfile.write('\n' + deaths_string)
+
+
+def main():
+    update_data()
+    texts = {
+        'file_name': 'covid_deaths.txt',
+        'cases_axis_name': 'Összes halál',
+        'y_axis_name': 'Összes halott',
+        'element_marker': 'k+',
+        'plot_file_suffix': '-deaths',
+        'plot_title': 'COVID-19 görbeillesztés - összes halott',
+    }
+    create_plots(texts)
+    texts = {
+        'file_name': 'covid_data.txt',
+        'cases_axis_name': 'Jelentett esetek',
+        'y_axis_name': 'Összes eset',
+        'element_marker': 'ro',
+        'plot_file_suffix': '',
+        'plot_title': 'COVID-19 görbeillesztés - összes eset',
+    }
+    create_plots(texts)
 
 
 if __name__ == "__main__":
