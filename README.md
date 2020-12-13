@@ -3,4 +3,4 @@ Script to visualise the current covid-19 trend in Hungary based on the *data* pr
 ![Covid curve image](https://i.imgur.com/KEHt3Do.png)
 ![Covid curve deaths image](https://i.imgur.com/uf5n6sA.png)
 
-The original is written by [Calmarius](https://github.com/Calmarius).
+The original is written by [Calmarius](https://github.com/Calmarius). I added automatic data scraping from https://koronavirus.gov.hu/ and uploading to imgur.
