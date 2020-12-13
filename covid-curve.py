@@ -119,7 +119,7 @@ def fit_exponential_model(x_data, y_data):
     sigma = [1] * len(y_data)
     # sigma[-1] = 0.1
     model = get_exponential_model(y_data[0])
-    popt, pcov = curve_fit(model, x_data, y_data, sigma=sigma)
+    popt, pcov = curve_fit(model, x_data, y_data, sigma=sigma, maxfev=5000)
     params = popt
     errors = np.sqrt(np.diag(pcov))
 
