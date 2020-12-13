@@ -232,7 +232,7 @@ def save_plot(curve_data, covid_data, log_result, texts):
 def main():
     "Entry point"
 
-    death_mode = False
+    death_mode = True
 
     if len(sys.argv) > 1:
         death_mode = sys.argv[1] == '--deaths'
