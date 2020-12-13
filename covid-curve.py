@@ -5,7 +5,7 @@ Quickly written curve fitting script for covid data.
 """
 
 import math
-#from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 import datetime
 from scipy.optimize import curve_fit
 import numpy as np
@@ -14,6 +14,7 @@ import requests
 from bs4 import BeautifulSoup
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import pyimgur
 
 matplotlib.use('Agg')
 
@@ -277,7 +278,7 @@ def create_plots(texts):
         log_result,
         exp_result
     )
-    #print_curves(curve_data)
+    # print_curves(curve_data)
     save_plot(curve_data, covid_data, log_result, texts)
 
 
@@ -368,6 +369,29 @@ def update_data():
         myfile.write('\n' + deaths_string)
 
 
+def upload_images():
+    with open('imgurcreds.txt') as f:
+        CLIENT_ID = f.readline().rstrip('\n')
+    plot_path = "plot.png"
+    plot_deaths_path = "plot-deaths.png"
+    im = pyimgur.Imgur(CLIENT_ID)
+    plot = im.upload_image(plot_path, title="Covid-19 graph")
+    plot_deaths = im.upload_image(plot_deaths_path, title="Covid-19 deaths")
+    print(plot.link)
+    print(plot_deaths.link)
+    return plot.link, plot_deaths.link
+
+
+def edit_readme(links):
+    with open('README.md', 'r') as file:
+        data = file.readlines()
+    data[2] = "![Covid curve image](" + str(links[0]) + ")\n"
+    data[3] = "![Covid curve deaths image](" + str(links[1]) + ")\n"
+    with open('README.md', 'w') as file:
+        file.writelines(data)
+    print("Updated README.md")
+
+
 def main():
     update_data()
     texts = {
@@ -388,6 +412,8 @@ def main():
         'plot_title': 'COVID-19 görbeillesztés - összes eset',
     }
     create_plots(texts)
+    links = upload_images()
+    edit_readme(links)
 
 
 if __name__ == "__main__":
