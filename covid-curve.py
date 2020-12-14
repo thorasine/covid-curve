@@ -308,6 +308,7 @@ def read_covid_data():
 
 
 def scrape(days_needed):
+    print("Scrapping started for " + str(days_needed) + " days")
     max_pages_to_scan = 50
     data = []
     for page in range(max_pages_to_scan):
@@ -344,6 +345,13 @@ def update_data():
     data = scrape(days_needed)
     data = data[:days_needed]
     data.reverse()
+    # We don't want to duplicate update
+    if datetime.datetime.strptime(data[-1][0], '%Y-%m-%d') < today:
+        if len(data) == 1:
+            print("No new data on the site yet, returning...")
+            return
+        else:
+            del data[0]
     print(data)
 
     covid_string = ""
