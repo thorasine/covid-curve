@@ -1,0 +1,7 @@
+numpy==1.18.0
+matplotlib==3.3.2
+requests==2.22.0
+pyimgur==0.6.0
+scipy==1.5.2
+bs4==0.0.1
+beautifulsoup4==4.9.3

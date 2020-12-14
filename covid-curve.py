@@ -307,13 +307,11 @@ def read_covid_data():
     return last_line, last_deaths_line
 
 
-def scrape(days_needed):
-    print("Scrapping started for " + str(days_needed) + " days")
-    max_pages_to_scan = 50
+def scrape(last_date):
+    print("Scrapping started from today until " + str(last_date))
+    max_pages_to_scan = 100
     data = []
     for page in range(max_pages_to_scan):
-        if len(data) > days_needed:
-            return data
         url = 'https://koronavirus.gov.hu/hirek?page=' + str(page)
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
@@ -329,32 +327,24 @@ def scrape(days_needed):
                 date = article.find('i').text.strip()[:-9].replace(".", "")
                 date_s = date.split()
                 date = date_s[0] + "-" + month_translator(date_s[1]) + "-" + date_s[2]
-                triplet = (date, infected, death)
-                data.append(triplet)
+                if datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d') > last_date:
+                    triplet = (date, infected, death)
+                    data.append(triplet)
+                    print(triplet)
+                else:
+                    return data
     return data
 
 
 def update_data():
     last_line, last_deaths_line = read_covid_data()
-    last_date = datetime.datetime.strptime(last_line[:10], '%Y-%m-%d')
-    today = datetime.datetime.today()
-    days_needed = (today - last_date).days
-    if days_needed < 1:
+    last_date = datetime.datetime.strptime(last_line[:10], '%Y-%m-%d').strftime('%Y-%m-%d')
+    today = datetime.datetime.today().strftime('%Y-%m-%d')
+    if today == last_date:
         print("Already scrapped today's data.")
         return
-    data = scrape(days_needed)
-    data = data[:days_needed]
+    data = scrape(last_date)
     data.reverse()
-    # We don't want to duplicate update
-    """
-    if datetime.datetime.strptime(data[-1][0], '%Y-%m-%d') < today:
-        if len(data) == 1:
-            print("No new data on the site yet, returning...")
-            return
-        else:
-            del data[0]
-    """
-    print(data)
 
     covid_string = ""
     deaths_string = ""
