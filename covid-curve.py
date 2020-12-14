@@ -309,7 +309,7 @@ def read_covid_data():
 
 def scrape(last_date):
     print("Scrapping started from today until " + str(last_date))
-    max_pages_to_scan = 100
+    max_pages_to_scan = 50
     data = []
     for page in range(max_pages_to_scan):
         url = 'https://koronavirus.gov.hu/hirek?page=' + str(page)
@@ -318,9 +318,9 @@ def scrape(last_date):
         articles = soup.find_all(class_='article-teaser')
         for article in articles:
             splitted = article.find('h3').text.strip().split()
-            if len(splitted) > 1 and splitted[1] == "fővel" and splitted[2] == "emelkedett":
+            if len(splitted) > 6 and splitted[1] == "fővel" and splitted[2] == "emelkedett":
                 infected = splitted[0]
-                for i in range(3, len(splitted)):  # krónikus or idős, sometimes both, sometimes neither..
+                for i in range(6, len(splitted)):  # krónikus or idős, sometimes both, sometimes neither..
                     if splitted[i] == "elhunyt":
                         death = splitted[i + 1]
                         break
