@@ -317,12 +317,12 @@ def scrape(last_date):
         soup = BeautifulSoup(page.content, 'html.parser')
         articles = soup.find_all(class_='article-teaser')
         for article in articles:
-            splitted = article.find('h3').text.strip().split()
-            if len(splitted) > 6 and splitted[1] == "fővel" and splitted[2] == "emelkedett":
-                infected = splitted[0]
-                for i in range(6, len(splitted)):  # krónikus or idős, sometimes both, sometimes neither..
-                    if splitted[i] == "elhunyt":
-                        death = splitted[i + 1]
+            title = article.find('h3').text.strip().split()
+            if len(title) > 6 and title[1] == "fővel" and title[2] == "emelkedett":
+                infected = title[0]
+                for i in range(6, len(title)):  # krónikus or idős, sometimes both, sometimes neither..
+                    if title[i] == "elhunyt":
+                        death = title[i + 1]
                         break
                 date = article.find('i').text.strip()[:-9].replace(".", "")
                 date_s = date.split()
@@ -333,6 +333,8 @@ def scrape(last_date):
                     print(triplet)
                 else:
                     return data
+    print("Could not scrap back until " + str(last_date))
+    print("Last scrapped date: " + str(data[-1][0]))
     return data
 
 
