@@ -347,7 +347,9 @@ def update_data():
         return
     data = scrape(last_date)
     data.reverse()
-
+    if len(data) == 0:
+        print("Could not scrap data from web. The data for today is probably not out yet.")
+        return
     covid_string = ""
     deaths_string = ""
     total_cases = int(last_line.split()[1])
