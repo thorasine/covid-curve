@@ -320,19 +320,23 @@ def scrape(last_date):
             title = article.find('h3').text.strip().split()
             if len(title) > 6 and title[1] == "fővel" and title[2] == "emelkedett":
                 infected = title[0]
-                for i in range(6, len(title)):  # krónikus or idős, sometimes both, sometimes neither..
-                    if title[i] == "elhunyt":
-                        death = title[i + 1]
-                        break
-                date = article.find('i').text.strip()[:-9].replace(".", "")
-                date_s = date.split()
-                date = date_s[0] + "-" + month_translator(date_s[1]) + "-" + date_s[2]
-                if datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d') > last_date:
-                    triplet = (date, infected, death)
-                    data.append(triplet)
-                    print(triplet)
-                else:
-                    return data
+            elif len(title) > 6 and title[2] == "fővel" and title[3] == "emelkedett": # 4 405 fővel emelkedet..
+                infected = title[0] + title[1]
+            else:
+                continue
+            for i in range(6, len(title)):  # krónikus or idős, sometimes both, sometimes neither..
+                if title[i] == "elhunyt":
+                    death = title[i + 1]
+                    break
+            date = article.find('i').text.strip()[:-9].replace(".", "")
+            date_s = date.split()
+            date = date_s[0] + "-" + month_translator(date_s[1]) + "-" + date_s[2]
+            if datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d') > last_date:
+                triplet = (date, infected, death)
+                data.append(triplet)
+                print(triplet)
+            else:
+                return data
     print("Could not scrap back until " + str(last_date))
     print("Last scrapped date: " + str(data[-1][0]))
     return data
