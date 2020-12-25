@@ -400,20 +400,20 @@ def main():
     update_data()
     texts = {
         'file_name': 'covid_deaths.txt',
-        'cases_axis_name': 'Összes halál',
-        'y_axis_name': 'Összes halott',
+        'cases_axis_name': 'Total deaths',
+        'y_axis_name': 'Total deaths',
         'element_marker': 'k+',
         'plot_file_suffix': '-deaths',
-        'plot_title': 'COVID-19 görbeillesztés - összes halott',
+        'plot_title': 'COVID-19 curve fitting - total deaths',
     }
     create_plots(texts)
     texts = {
         'file_name': 'covid_data.txt',
-        'cases_axis_name': 'Jelentett esetek',
-        'y_axis_name': 'Összes eset',
+        'cases_axis_name': 'Reported cases',
+        'y_axis_name': 'Total cases',
         'element_marker': 'ro',
         'plot_file_suffix': '',
-        'plot_title': 'COVID-19 görbeillesztés - összes eset',
+        'plot_title': 'COVID-19 curve fitting - total cases',
     }
     create_plots(texts)
     links = upload_images()
