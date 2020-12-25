@@ -200,11 +200,11 @@ def save_plot(curve_data, covid_data, log_result, texts):
              texts['element_marker'], label=texts['cases_axis_name'])
     if log_result is not None:
         plt.plot(curve_data['date'], curve_data['logistic'],
-                 'g-', label='Szigmoid modell')
+                 'g-', label='Sigmoid model')
     plt.plot(curve_data['date'], curve_data['exponential'],
-             'b-', label='Exponenciális modell')
+             'b-', label='Exponential model')
     plt.ylabel(texts['y_axis_name'])
-    plt.xlabel('Dátum')
+    plt.xlabel('Date')
     if log_result is None:
         max_y = 2 * max(covid_data['y_data'])
     else:
@@ -233,20 +233,20 @@ def create_plots(texts):
         covid_data['x_data'], covid_data['y_data'], covid_data['base_date'])
     if log_result is not None:
         texts['peak_date_str'] = (
-            "Szigmoid inflexiós pont: "
+            "Sigmoid inflection point: "
             "{} ± {:.2f} nap"
-            " (Max meredekség: {:.2f}, f(x+1) - y(x) ≈ {:.2f})").format(
+            " (Maximum slope: {:.2f}, f(x+1) - y(x) ≈ {:.2f})").format(
             log_result['peak_date'].strftime(
                 '%Y-%m-%d'), log_result['peak_date_error'],
             log_result['peak_growth'], log_result['tomorrow_growth']
         )
-        texts['max_inf_str'] = "Szigmoid maximum: {:.2f} ± {:.2f}".format(
+        texts['max_inf_str'] = "Sigmoid maximum: {:.2f} ± {:.2f}".format(
             log_result['max_inf'] + covid_data['y_data'][0],
             log_result['max_inf_error']
         )
         print(texts['max_inf_str'])
     else:
-        texts['peak_date_str'] = "Szigmoid modell nem illeszkedik az adatokra."
+        texts['peak_date_str'] = "The Sigmoid model does not fit the data."
         texts['max_inf_str'] = ""
         print("Logistic curve is too bad fit for current data")
 
@@ -254,7 +254,7 @@ def create_plots(texts):
         covid_data['x_data'], covid_data['y_data'])
     print(exp_result)
     texts['daily_growth_str'] = (
-        "Napi növekedés az exponenciális modell alapján:"
+        "Daily growth based on the exponential model:"
         " {:.2f}% ± {:.2}%."
         " (Duplázódás: {:.2f} naponta, f(x+1) - y(x) ≈ {:.2f})").format(
         exp_result['daily_growth'] * 100 - 100, exp_result['daily_growth_error'] *
