@@ -234,7 +234,7 @@ def create_plots(texts):
     if log_result is not None:
         texts['peak_date_str'] = (
             "Sigmoid inflection point: "
-            "{} ± {:.2f} nap"
+            "{} ± {:.2f} day"
             " (Maximum slope: {:.2f}, f(x+1) - y(x) ≈ {:.2f})").format(
             log_result['peak_date'].strftime(
                 '%Y-%m-%d'), log_result['peak_date_error'],
@@ -256,7 +256,7 @@ def create_plots(texts):
     texts['daily_growth_str'] = (
         "Daily growth based on the exponential model:"
         " {:.2f}% ± {:.2}%."
-        " (Duplázódás: {:.2f} naponta, f(x+1) - y(x) ≈ {:.2f})").format(
+        " (Duplicating: {:.2f} daily, f(x+1) - y(x) ≈ {:.2f})").format(
         exp_result['daily_growth'] * 100 - 100, exp_result['daily_growth_error'] *
         100, math.log(
             2) / math.log(exp_result['daily_growth']),
