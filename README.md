@@ -1,5 +1,5 @@
 # covid-curve
-Script to visualise the current covid-19 trend in Hungary based on the data provided by the government.
+Script to visualise the current covid-19 trend in Hungary based on the data provided by the [government](https://koronavirus.gov.hu/hirek).
 
 ![Covid curve image](https://i.imgur.com/KKTM1VX.png)
 ![Covid curve deaths image](https://i.imgur.com/he4Qpif.png)
