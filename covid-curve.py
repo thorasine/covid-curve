@@ -13,6 +13,13 @@ import pyimgur
 
 matplotlib.use('Agg')
 
+plot_sigmoid = False
+plot_exponential = True
+days_to_simulate_multiplier = 4
+max_y_multiplier = 2
+# "" to determine it automatically
+max_prediction_date = "2021-03-20"
+
 
 def parse_covid_data(filename):
     "Loads the date from file into two lists separate x and y list"
@@ -146,7 +153,7 @@ def create_curve_data(x_data, y_data, base_date, log_result, exp_result):
         days_to_simulate = 2 * (x_data[-1] - x_data[0] + 1)
     else:
         days_to_simulate = max(
-            2 * (log_result['peak_date'] - base_date).days,
+            days_to_simulate_multiplier * (log_result['peak_date'] - base_date).days,
             x_data[-1] - x_data[0] + 1
         )
 
@@ -157,13 +164,11 @@ def create_curve_data(x_data, y_data, base_date, log_result, exp_result):
     out_y = y_data + [float('nan')] * (days_to_simulate - len(y_data))
 
     if log_result is not None:
-        out_log = [get_logistic_model(y_data[0])(
-            x, *log_result['popt']) for x in days]
+        out_log = [get_logistic_model(y_data[0])(x, *log_result['popt']) for x in days]
     else:
         out_log = [float('nan')] * days_to_simulate
 
-    out_exp = [get_exponential_model(y_data[0])(
-        x, *exp_result['popt']) for x in days]
+    out_exp = [get_exponential_model(y_data[0])(x, *exp_result['popt']) for x in days]
 
     return {
         'date': out_date,
@@ -196,30 +201,30 @@ def save_plot(curve_data, covid_data, log_result, texts):
     axes.xaxis.set_minor_locator(mdates.DayLocator())
 
     plt.figure(figsize=[10.24, 7.68])
-    plt.plot(curve_data['date'], curve_data['y'],
-             texts['element_marker'], label=texts['cases_axis_name'])
-    if log_result is not None:
-        plt.plot(curve_data['date'], curve_data['logistic'],
-                 'g-', label='Sigmoid model')
-    plt.plot(curve_data['date'], curve_data['exponential'],
-             'b-', label='Exponential model')
+    plt.plot(curve_data['date'], curve_data['y'], texts['element_marker'], label=texts['cases_axis_name'])
+    if log_result is not None and plot_sigmoid:
+        plt.plot(curve_data['date'], curve_data['logistic'], 'g-', label='Sigmoid model')
+    if plot_exponential:
+        plt.plot(curve_data['date'], curve_data['exponential'], 'b-', label='Exponential model')
     plt.ylabel(texts['y_axis_name'])
     plt.xlabel('Date')
     if log_result is None:
-        max_y = 2 * max(covid_data['y_data'])
+        max_y = max_y = max_y_multiplier * max(covid_data['y_data'])
     else:
-        max_y = max(curve_data['logistic'] + covid_data['y_data'])
-    plt.tight_layout(rect=[0.05, 0.1, 1, 0.9])
-    plt.gcf().text(0.01, 0.01,
-                   texts['max_inf_str'] + "\n" +
+        max_y = max_y_multiplier * max(curve_data['logistic'] + covid_data['y_data'])
+    # plt.tight_layout(rect=[0.05, 0.1, 1, 0.9])
+    plt.gcf().text(0.01, 0.01,texts['max_inf_str'] + "\n" +
                    texts['peak_date_str'] + "\n" +
                    texts['daily_growth_str'], va='bottom'
                    )
-    plt.axis([min(curve_data['date']), max(
-        curve_data['date']), covid_data['y_data'][0], max_y])
+    max_x = datetime.datetime.strptime(max_prediction_date, '%Y-%m-%d')
+    if len(max_prediction_date) == 0:
+        plt.axis([min(curve_data['date']), max(curve_data['date']), covid_data['y_data'][0], max_y])
+    else:
+        plt.axis([min(curve_data['date']), max_x, covid_data['y_data'][0], max_y])
     plt.legend()
     plt.grid()
-    plt.title("{} {}".format(texts['plot_title'], covid_data['last_date_str']))
+    plt.title("{} {} {} {}".format("Covid-19 Hungary -", texts['plot_title'], "in the third wave", covid_data['last_date_str']))
     file_name = 'plot' + texts['plot_file_suffix'] + '.png'
     plt.savefig(file_name)
     print("Plot saved to {}".format(file_name))
@@ -231,7 +236,7 @@ def create_plots(texts):
 
     log_result = fit_logistic_model(
         covid_data['x_data'], covid_data['y_data'], covid_data['base_date'])
-    if log_result is not None:
+    if log_result is not None and plot_sigmoid:
         texts['peak_date_str'] = (
             "Sigmoid inflection point: "
             "{} ± {:.2f} day"
@@ -387,22 +392,22 @@ def upload_images():
 def edit_readme(links):
     with open('README.md', 'r') as file:
         data = file.readlines()
-    data[3] = "![Covid curve image](" + str(links[0]) + ")\n"
-    data[4] = "![Covid curve deaths image](" + str(links[1]) + ")\n"
+    data[4] = "![Total cases in the third wave]](" + str(links[0]) + ")\n"
+    data[5] = "![Total deaths in the third wave]](" + str(links[1]) + ")\n"
     with open('README.md', 'w') as file:
         file.writelines(data)
     print("Updated README.md")
 
 
 def main():
-    update_data()
+    # update_data()
     texts = {
         'file_name': 'covid_deaths.txt',
         'cases_axis_name': 'Total deaths',
         'y_axis_name': 'Total deaths',
         'element_marker': 'k+',
         'plot_file_suffix': '-deaths',
-        'plot_title': 'COVID-19 curve fitting - total deaths',
+        'plot_title': 'total deaths',
     }
     create_plots(texts)
     texts = {
@@ -411,7 +416,7 @@ def main():
         'y_axis_name': 'Total cases',
         'element_marker': 'ro',
         'plot_file_suffix': '',
-        'plot_title': 'COVID-19 curve fitting - total cases',
+        'plot_title': 'total cases',
     }
     create_plots(texts)
     links = upload_images()
