@@ -250,8 +250,7 @@ def create_plots(texts):
         texts['max_inf_str'] = ""
         print("Logistic curve is too bad fit for current data")
 
-    exp_result = fit_exponential_model(
-        covid_data['x_data'], covid_data['y_data'])
+    exp_result = fit_exponential_model(covid_data['x_data'], covid_data['y_data'])
     print(exp_result)
     texts['daily_growth_str'] = (
         "Daily growth based on the exponential model:"
@@ -263,8 +262,7 @@ def create_plots(texts):
         exp_result['tomorrow_growth']
     )
     print(texts['daily_growth_str'])
-    print("ln daily growth: {}, x_shift: {}".format(
-        exp_result["ln_daily_growth"], exp_result["x_shift"]))
+    print("ln daily growth: {}, x_shift: {}".format(exp_result["ln_daily_growth"], exp_result["x_shift"]))
 
     curve_data = create_curve_data(
         covid_data['x_data'],
