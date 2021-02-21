@@ -392,8 +392,8 @@ def upload_images():
 def edit_readme(links):
     with open('README.md', 'r') as file:
         data = file.readlines()
-    data[4] = "![Total cases in the third wave]](" + str(links[0]) + ")\n"
-    data[5] = "![Total deaths in the third wave]](" + str(links[1]) + ")\n"
+    data[4] = "![Total cases in the third wave](" + str(links[0]) + ")\n"
+    data[5] = "![Total deaths in the third wave](" + str(links[1]) + ")\n"
     with open('README.md', 'w') as file:
         file.writelines(data)
     print("Updated README.md")
