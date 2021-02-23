@@ -400,7 +400,7 @@ def edit_readme(links):
 
 
 def main():
-    # update_data()
+    update_data()
     texts = {
         'file_name': 'covid_deaths.txt',
         'cases_axis_name': 'Total deaths',
