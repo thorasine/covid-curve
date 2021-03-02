@@ -323,8 +323,12 @@ def scrape(last_date):
             title = article.find('h3').text.strip().split()
             if len(title) > 6 and title[1] == "fővel" and title[2] == "emelkedett":
                 infected = title[0]
-            elif len(title) > 6 and title[2] == "fővel" and title[3] == "emelkedett": # 4 405 fővel emelkedet..
+            # 4 405 fővel emelkedet [...]
+            elif len(title) > 6 and title[2] == "fővel" and title[3] == "emelkedett": 
                 infected = title[0] + title[1]
+            # [...] 2764 az új fertőzött [...]
+            elif len(title) > 8 and title[8] == "az" and title[9] == "új" and title[10] == "fertőzött":
+                infected = title[7]
             else:
                 continue
             for i in range(6, len(title)):  # krónikus or idős, sometimes both, sometimes neither..
