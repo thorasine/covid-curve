@@ -18,7 +18,7 @@ plot_exponential = True
 days_to_simulate_multiplier = 4
 max_y_multiplier = 2
 # "" to determine it automatically
-max_prediction_date = "2021-03-20"
+max_prediction_date = "2021-04-01"
 
 
 def parse_covid_data(filename):
@@ -327,11 +327,21 @@ def scrape(last_date):
             elif len(title) > 6 and title[2] == "fővel" and title[3] == "emelkedett": 
                 infected = title[0] + title[1]
             # [...] 2764 az új fertőzött [...]
-            elif len(title) > 8 and title[8] == "az" and title[9] == "új" and title[10] == "fertőzött":
+            elif len(title) > 10 and title[8] == "az" and title[9] == "új" and title[10] == "fertőzött":
                 infected = title[7]
+            # God has abandoned the person who makes up these titles
+            elif len(title) > 13:
+                infected = -1
+                for i in range(7, len(title) - 3):
+                    if title[i] == "az" and title[i + 1] == "új" and title[i + 2] == "fertőzött":
+                        infected = title[i - 1]
+                        break
+                if infected == -1:
+                    continue
             else:
                 continue
-            for i in range(6, len(title)):  # krónikus or idős, sometimes both, sometimes neither..
+            # krónikus or idős, sometimes both, sometimes neither..
+            for i in range(6, len(title)):
                 if title[i] == "elhunyt":
                     death = title[i + 1]
                     break
