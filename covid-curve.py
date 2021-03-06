@@ -330,9 +330,9 @@ def scrape(last_date):
             elif len(title) > 10 and title[8] == "az" and title[9] == "új" and title[10] == "fertőzött":
                 infected = title[7]
             # God has abandoned the person who makes up these titles
-            elif len(title) > 13:
+            elif len(title) > 10:
                 infected = -1
-                for i in range(7, len(title) - 3):
+                for i in range(5, len(title) - 3):
                     if title[i] == "az" and title[i + 1] == "új" and title[i + 2] == "fertőzött":
                         infected = title[i - 1]
                         break
