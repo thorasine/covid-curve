@@ -329,6 +329,9 @@ def scrape(last_date):
             # [...] 2764 az új fertőzött [...]
             elif len(title) > 10 and title[8] == "az" and title[9] == "új" and title[10] == "fertőzött":
                 infected = title[7]
+            elif len(title) == 7 and title[0] == "Egymillió" and title[1] == "ember" and title[5] == "oltást":
+                infected = 2696
+                death = 115
             # God has abandoned the person who makes up these titles
             elif len(title) > 10:
                 infected = -1
