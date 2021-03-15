@@ -9,6 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import pyimgur
 
 matplotlib.use('Agg')
@@ -18,7 +19,7 @@ plot_exponential = True
 days_to_simulate_multiplier = 4
 max_y_multiplier = 2
 # "" to determine it automatically
-max_prediction_date = "2021-04-01"
+max_prediction_date = "2021-04-20"
 
 
 def parse_covid_data(filename):
@@ -196,9 +197,9 @@ def save_plot(curve_data, covid_data, log_result, texts):
     "Generates and saves the plot."
 
     axes = plt.gca()
-    axes.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-    axes.xaxis.set_major_locator(mdates.MonthLocator())
-    axes.xaxis.set_minor_locator(mdates.DayLocator())
+    # axes.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    # axes.xaxis.set_major_locator(mdates.MonthLocator())
+    # axes.xaxis.set_minor_locator(mdates.DayLocator())
 
     plt.figure(figsize=[10.24, 7.68])
     plt.plot(curve_data['date'], curve_data['y'], texts['element_marker'], label=texts['cases_axis_name'])
@@ -222,6 +223,7 @@ def save_plot(curve_data, covid_data, log_result, texts):
         plt.axis([min(curve_data['date']), max(curve_data['date']), covid_data['y_data'][0], max_y])
     else:
         plt.axis([min(curve_data['date']), max_x, covid_data['y_data'][0], max_y])
+
     plt.legend()
     plt.grid()
     plt.title("{} {} {} {}".format("Covid-19 Hungary -", texts['plot_title'], "in the third wave", covid_data['last_date_str']))
