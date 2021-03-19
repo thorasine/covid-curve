@@ -9,7 +9,8 @@ import requests
 from bs4 import BeautifulSoup
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+from matplotlib.ticker import (FormatStrFormatter, MultipleLocator, AutoMinorLocator)
+import matplotlib.ticker as tkr
 import pyimgur
 
 matplotlib.use('Agg')
@@ -196,11 +197,6 @@ def print_curves(curve_data):
 def save_plot(curve_data, covid_data, log_result, texts):
     "Generates and saves the plot."
 
-    axes = plt.gca()
-    # axes.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
-    # axes.xaxis.set_major_locator(mdates.MonthLocator())
-    # axes.xaxis.set_minor_locator(mdates.DayLocator())
-
     plt.figure(figsize=[10.24, 7.68])
     plt.plot(curve_data['date'], curve_data['y'], texts['element_marker'], label=texts['cases_axis_name'])
     if log_result is not None and plot_sigmoid:
@@ -210,7 +206,7 @@ def save_plot(curve_data, covid_data, log_result, texts):
     plt.ylabel(texts['y_axis_name'])
     plt.xlabel('Date')
     if log_result is None:
-        max_y = max_y = max_y_multiplier * max(covid_data['y_data'])
+        max_y = max_y_multiplier * max(covid_data['y_data'])
     else:
         max_y = max_y_multiplier * max(curve_data['logistic'] + covid_data['y_data'])
     # plt.tight_layout(rect=[0.05, 0.1, 1, 0.9])
@@ -223,7 +219,12 @@ def save_plot(curve_data, covid_data, log_result, texts):
         plt.axis([min(curve_data['date']), max(curve_data['date']), covid_data['y_data'][0], max_y])
     else:
         plt.axis([min(curve_data['date']), max_x, covid_data['y_data'][0], max_y])
-
+    axes = plt.gca()
+    axes.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+    axes.xaxis.set_major_locator(mdates.MonthLocator())
+    axes.xaxis.set_minor_locator(mdates.DayLocator())
+    axes.yaxis.set_major_formatter(tkr.FuncFormatter(lambda y,  p: format(int(y), ',')))
+    axes.yaxis.set_major_locator(MultipleLocator(100000))
     plt.legend()
     plt.grid()
     plt.title("{} {} {} {}".format("Covid-19 Hungary -", texts['plot_title'], "in the third wave", covid_data['last_date_str']))
