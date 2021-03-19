@@ -331,7 +331,7 @@ def scrape(last_date):
             # [...] 2764 az új fertőzött [...]
             elif len(title) > 10 and title[8] == "az" and title[9] == "új" and title[10] == "fertőzött":
                 infected = title[7]
-            elif len(title) == 7 and title[0] == "Egymillió" and title[1] == "ember" and title[5] == "oltást":
+            elif len(title) == 7 and title[0] == "Egymillió" and title[1] == "ember" and title[2] == "már" and title[2] == "megkapta" and title[6] == "Magyarországon":
                 infected = 2696
                 death = 115
             # God has abandoned the person who makes up these titles
@@ -339,7 +339,10 @@ def scrape(last_date):
                 infected = -1
                 for i in range(5, len(title) - 3):
                     if title[i] == "az" and title[i + 1] == "új" and title[i + 2] == "fertőzött":
-                        infected = title[i - 1]
+                        if title[i - 2].isnumeric() and title[i - 1].isnumeric():
+                            infected = title[i - 2] + title[i - 1]
+                        else:
+                            infected = title[i - 1]
                         break
                 if infected == -1:
                     continue
