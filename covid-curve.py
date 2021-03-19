@@ -224,7 +224,10 @@ def save_plot(curve_data, covid_data, log_result, texts):
     axes.xaxis.set_major_locator(mdates.MonthLocator())
     axes.xaxis.set_minor_locator(mdates.DayLocator())
     axes.yaxis.set_major_formatter(tkr.FuncFormatter(lambda y,  p: format(int(y), ',')))
-    axes.yaxis.set_major_locator(MultipleLocator(100000))
+    if texts['plot_file_suffix'] == "-deaths":
+        axes.yaxis.set_major_locator(MultipleLocator(2000))
+    else:
+        axes.yaxis.set_major_locator(MultipleLocator(100000))
     plt.legend()
     plt.grid()
     plt.title("{} {} {} {}".format("Covid-19 Hungary -", texts['plot_title'], "in the third wave", covid_data['last_date_str']))
