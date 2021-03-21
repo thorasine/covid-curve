@@ -445,8 +445,8 @@ def main():
         'plot_title': 'total cases',
     }
     create_plots(texts)
-    #links = upload_images()
-    #edit_readme(links)
+    links = upload_images()
+    edit_readme(links)
 
 
 if __name__ == "__main__":
