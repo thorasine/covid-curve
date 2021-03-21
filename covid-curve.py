@@ -15,12 +15,12 @@ import pyimgur
 
 matplotlib.use('Agg')
 
-plot_sigmoid = False
+plot_sigmoid = True
 plot_exponential = True
 days_to_simulate_multiplier = 4
-max_y_multiplier = 2
+max_y_multiplier = 1.1
 # "" to determine it automatically
-max_prediction_date = "2021-04-20"
+max_prediction_date = "2021-05-01"
 
 
 def parse_covid_data(filename):
@@ -214,10 +214,10 @@ def save_plot(curve_data, covid_data, log_result, texts):
                    texts['peak_date_str'] + "\n" +
                    texts['daily_growth_str'], va='bottom'
                    )
-    max_x = datetime.datetime.strptime(max_prediction_date, '%Y-%m-%d')
     if len(max_prediction_date) == 0:
         plt.axis([min(curve_data['date']), max(curve_data['date']), covid_data['y_data'][0], max_y])
     else:
+        max_x = datetime.datetime.strptime(max_prediction_date, '%Y-%m-%d')
         plt.axis([min(curve_data['date']), max_x, covid_data['y_data'][0], max_y])
     axes = plt.gca()
     axes.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
@@ -445,8 +445,8 @@ def main():
         'plot_title': 'total cases',
     }
     create_plots(texts)
-    links = upload_images()
-    edit_readme(links)
+    #links = upload_images()
+    #edit_readme(links)
 
 
 if __name__ == "__main__":
