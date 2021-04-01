@@ -347,9 +347,11 @@ def scrape(last_date):
             elif len(title) > 10:
                 infected = -1
                 for i in range(5, len(title) - 3):
-                    if title[i] == "az" and title[i + 1] == "új" and title[i + 2] == "fertőzött":
+                    if title[i] == "az" and title[i + 1] == "új" and (title[i + 2] == "fertőzött" or title[i + 2] == "fertőzött,"):
                         if title[i - 2].isnumeric() and title[i - 1].isnumeric():
                             infected = title[i - 2] + title[i - 1]
+                        elif title[i - 1].isnumeric():
+                            infected = title[i - 1]
                         else:
                             infected = title[i - 1]
                         break
