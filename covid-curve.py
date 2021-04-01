@@ -20,7 +20,7 @@ plot_exponential = True
 days_to_simulate_multiplier = 4
 max_y_multiplier = 1.1
 # "" to determine it automatically
-max_prediction_date = "2021-05-01"
+max_prediction_date = "2021-06-01"
 
 
 def parse_covid_data(filename):
