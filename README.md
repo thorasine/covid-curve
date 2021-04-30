@@ -2,8 +2,8 @@
 Script to visualize the current covid-19 trend in Hungary based on the data provided by the [government](https://koronavirus.gov.hu/hirek).
 
 ## Third wave
-![Total cases in the third wave](https://i.imgur.com/IvvBj4i.png)
-![Total deaths in the third wave](https://i.imgur.com/2CmUX4q.png)
+![Total cases in the third wave](https://i.imgur.com/7ysySoF.png)
+![Total deaths in the third wave](https://i.imgur.com/wqb4xKW.png)
 
 ## Second wave
 ![Total cases in the second wave](https://i.imgur.com/VKsCJKm.png)
