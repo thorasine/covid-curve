@@ -16,11 +16,11 @@ import pyimgur
 matplotlib.use('Agg')
 
 plot_sigmoid = True
-plot_exponential = True
+plot_exponential = False
 days_to_simulate_multiplier = 4
 max_y_multiplier = 1.1
 # "" to determine it automatically
-max_prediction_date = "2021-07-01"
+max_prediction_date = "2021-06-05"
 
 
 def parse_covid_data(filename):
@@ -240,8 +240,7 @@ def create_plots(texts):
     # x_data, y_data, base_date, last_date
     covid_data = parse_covid_data(texts['file_name'])
 
-    log_result = fit_logistic_model(
-        covid_data['x_data'], covid_data['y_data'], covid_data['base_date'])
+    log_result = fit_logistic_model(covid_data['x_data'], covid_data['y_data'], covid_data['base_date'])
     if log_result is not None and plot_sigmoid:
         texts['peak_date_str'] = (
             "Sigmoid inflection point: "
@@ -274,7 +273,6 @@ def create_plots(texts):
     )
     print(texts['daily_growth_str'])
     print("ln daily growth: {}, x_shift: {}".format(exp_result["ln_daily_growth"], exp_result["x_shift"]))
-
     curve_data = create_curve_data(
         covid_data['x_data'],
         covid_data['y_data'],
